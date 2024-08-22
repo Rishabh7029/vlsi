@@ -1,0 +1,26 @@
+module counter_system (
+    input wire clk,          // 1 MHz Clock input
+    input wire reset,        // Reset signal to initialize the counters
+    output reg [3:0] counter_a, // 4-bit output of Counter A (up counter)
+    output reg [3:0] counter_b  // 4-bit output of Counter B (down counter)
+);
+
+    // Counter A: Asynchronous up counter
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            counter_a <= 4'b0000;  // Initialize Counter A to 0000
+        end else begin
+            counter_a <= counter_a + 1;  // Increment Counter A on every clock pulse
+        end
+    end
+
+    // Counter B: Asynchronous down counter
+    always @(posedge clk or posedge reset) begin
+        if (reset) begin
+            counter_b <= 4'b1111;  // Initialize Counter B to 1111
+        end else if (counter_a == 4'b1100) begin
+            counter_b <= counter_b - 1;  // Decrement Counter B when Counter A is 12 (1100)
+        end
+    end
+
+endmodule
