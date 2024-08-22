@@ -1,0 +1,26 @@
+module tb_parity_encoder;
+    reg [3:0] data;            // Test input
+    wire [4:0] encoded_data;  // Output from the parity encoder
+
+    // Instantiate the parity_encoder
+    parity_encoder uut (
+        .data(data),
+        .encoded_data(encoded_data)
+    );
+
+    // Test sequence
+    initial begin
+        // Display header for the output
+        $display("data  | encoded_data");
+        $display("------|--------------");
+
+        // Test all possible 4-bit data values
+        for (data = 0; data < 16; data = data + 1) begin
+            #10; // Wait for 10 time units
+            $display("%b    | %b", data, encoded_data);
+        end
+
+        // End simulation
+        $finish;
+    end
+endmodule
