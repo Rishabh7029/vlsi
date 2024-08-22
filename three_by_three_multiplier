@@ -1,0 +1,56 @@
+module three_bit_adder (
+    input [2:0] a,          // 3-bit input a
+    input [2:0] b,          // 3-bit input b
+    input cin,              // Carry-in
+    output [3:0] sum        // 4-bit output sum (3-bit sum + carry-out)
+);
+
+// Function to perform 3-bit addition
+function [3:0] adder;
+    input [2:0] x;           // 3-bit operand x
+    input [2:0] y;           // 3-bit operand y
+    input c_in;              // Carry-in
+    reg [3:0] temp_sum;
+begin
+    temp_sum = x + y + c_in; // Perform the addition
+    adder = temp_sum;        // Return the 4-bit sum
+end
+endfunction
+
+// Assign the result of the function to sum
+assign sum = adder(a, b, cin);
+
+endmodule
+
+// three_by_three_multiplier
+
+module three_by_three_multiplier (
+    input [2:0] multiplicand,  // 3-bit multiplicand
+    input [2:0] multiplier,    // 3-bit multiplier
+    output [5:0] product       // 6-bit product (since 3x3 can produce a max 6-bit result)
+);
+
+wire [3:0] partial_sum1, partial_sum2, partial_sum3;
+wire [3:0] sum1, sum2;
+
+// Instantiate 3-bit adders
+three_bit_adder adder1 (
+    .a({1'b0, multiplicand[2] & multiplier[0], multiplicand[1] & multiplier[0], multiplicand[0] & multiplier[0]}), // Partial product 1
+    .b({2'b00, multiplicand[2] & multiplier[1], multiplicand[1] & multiplier[1]}),                                   // Partial product 2 shifted by 1
+    .cin(1'b0),
+    .sum(sum1)
+);
+
+three_bit_adder adder2 (
+    .a(sum1[2:0]), // Carry out from previous stage
+    .b({multiplicand[2] & multiplier[2], multiplicand[1] & multiplier[2], multiplicand[0] & multiplier[2], 1'b0}), // Partial product 3 shifted by 2
+    .cin(sum1[3]), // Carry out from previous adder
+    .sum(sum2)
+);
+
+// Combine the results to form the final product
+assign product = {sum2[3], sum2[2], sum2[1], sum2[0], sum1[1], multiplicand[0] & multiplier[0]};
+
+endmodule
+
+
