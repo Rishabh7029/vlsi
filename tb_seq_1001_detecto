@@ -1,0 +1,63 @@
+module tb_seq_1001_detector;
+
+    // Testbench signals
+    reg clk;            // Clock signal
+    reg reset;          // Reset signal
+    reg in;             // Input bitstream
+    wire out;           // Output signal
+
+    // Instantiate the sequence detector module
+    seq_1001_detector uut (
+        .clk(clk),
+        .reset(reset),
+        .in(in),
+        .out(out)
+    );
+
+    // Clock generation
+    initial begin
+        clk = 0;
+        forever #5 clk = ~clk;  // 10ns clock period (100 MHz clock)
+    end
+
+    // Testbench process
+    initial begin
+        // Initialize signals
+        reset = 1;
+        in = 0;
+        #15;  // Wait a few cycles before deasserting reset
+        
+        // Release reset
+        reset = 0;
+
+        // Apply test vectors
+        in = 1; #10;  // input sequence 1
+        in = 0; #10;  // input sequence 10
+        in = 0; #10;  // input sequence 100
+        in = 1; #10;  // input sequence 1001 -> should detect sequence
+
+        in = 0; #10;  // No sequence detected
+        in = 1; #10;  // Start of another sequence 1
+        in = 0; #10;  // input sequence 10
+        in = 0; #10;  // input sequence 100
+        in = 1; #10;  // input sequence 1001 -> should detect sequence
+
+        in = 1; #10;  // New sequence starts with 1
+        in = 0; #10;  // Continues with 10
+        in = 1; #10;  // Break sequence
+
+        in = 1; #10;  // No valid sequence continues
+        in = 0; #10;  // Continues with 10
+        in = 0; #10;  // input sequence 100
+        in = 1; #10;  // input sequence 1001 -> should detect sequence
+
+        // Finish simulation
+        $stop;
+    end
+
+    // Monitor changes in output and inputs
+    initial begin
+        $monitor("At time %t, in = %b, out = %b, state = %b", $time, in, out, uut.current_state);
+    end
+
+endmodule
