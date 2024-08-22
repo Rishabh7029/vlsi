@@ -1,0 +1,23 @@
+module three_bit_adder (
+    input [2:0] a,          // 3-bit input a
+    input [2:0] b,          // 3-bit input b
+    input cin,              // Carry-in
+    output [3:0] sum        // 4-bit output sum (3-bit sum + carry-out)
+);
+
+// Function to perform 3-bit addition
+function [3:0] adder;
+    input [2:0] x;           // 3-bit operand x
+    input [2:0] y;           // 3-bit operand y
+    input c_in;              // Carry-in
+    reg [3:0] temp_sum;
+begin
+    temp_sum = x + y + c_in; // Perform the addition
+    adder = temp_sum;        // Return the 4-bit sum
+end
+endfunction
+
+// Assign the result of the function to sum
+assign sum = adder(a, b, cin);
+
+endmodule
