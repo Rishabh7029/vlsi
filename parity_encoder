@@ -1,0 +1,10 @@
+module parity_encoder (
+    input [3:0] data,   // 4-bit data input
+    output reg [4:0] encoded_data  // 5-bit output (4 data bits + 1 parity bit)
+);
+    always @(*) begin
+        // Calculate the parity bit to ensure the number of 1s is even
+        encoded_data = data;  // Assign data bits to the first 4 bits of the output
+        encoded_data[4] = ~(data[3] ^ data[2] ^ data[1] ^ data[0]); // Even parity calculation
+    end
+endmodule
