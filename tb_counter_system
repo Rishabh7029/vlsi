@@ -1,0 +1,41 @@
+module tb_counter_system;
+    reg clk;              // Clock signal
+    reg reset;            // Reset signal
+    wire [3:0] counter_a; // Output of Counter A
+    wire [3:0] counter_b; // Output of Counter B
+
+    // Instantiate the counter_system module
+    counter_system uut (
+        .clk(clk),
+        .reset(reset),
+        .counter_a(counter_a),
+        .counter_b(counter_b)
+    );
+
+    // Clock generation
+    initial begin
+        clk = 0;
+        forever #500 clk = ~clk; // Toggle clock every 500ns to create a 1MHz clock
+    end
+
+    // Test sequence
+    initial begin
+        // Initialize reset
+        reset = 1;
+        #1000;  // Hold reset high for 1000ns
+
+        reset = 0; // Release reset
+
+        // Run the simulation for some time
+        #20000;
+
+        // Finish simulation
+        $finish;
+    end
+
+    // Monitor signals
+    initial begin
+        $monitor("Time = %0dns, Counter A = %b, Counter B = %b", $time, counter_a, counter_b);
+    end
+
+endmodule
